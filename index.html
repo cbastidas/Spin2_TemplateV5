@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BETS10: Şansını Dene!</title>
+    <style>
+
+        /* CSS RESET & CUSTOM PROPERTIES */
+        :root {
+            --primary-color: #f7a61d;
+            --accent-color: #e53935;
+            --text-color: #ffffff;
+            --font-family: 'Arial', sans-serif;
+            
+            /* Sizing and positioning variables */
+            --stage-padding-top: 5vh;
+            --header-font-size-mobile: 5vw;
+            --wheel-area-size-mobile: 90vw;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            overflow-x: hidden;
+            font-family: var(--font-family);
+            background: #2c0a4d url('assets/bg.png') no-repeat center center fixed;
+            background-size: cover;
+
+        }
+        
+        /* CONTAINER & BACKGROUND */
+        #container {
+            position: relative;
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            flex-direction: column;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        #header-text {
+            position: absolute;
+            z-index: 999;
+            background-image: url('assets/header.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            animation: fadeIn 1s ease-in-out;
+            pointer-events: none;
+        }
+
+        .rain-item {
+            position: absolute;
+            width: 20px; 
+            height: 20px;
+            background-size: cover;
+            pointer-events: none; 
+            opacity: 0; 
+            animation: rainDrop 3s forwards ease-out; 
+            z-index: 9999;
+        }
+        
+
+        /* WHEEL & SPIN AREA - ALWAYS CENTERED */
+        #wheel-area {
+            position: relative;
+            top: -80px;
+            left: auto;
+            transform: none;
+            width: var(--wheel-area-size-mobile);
+            height: var(--wheel-area-size-mobile);
+            max-width: 500px;
+            max-height: 500px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 5;
+        }
+
+        /* WHEEL FRAME */
+        #wheel-frame {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            z-index: 4;
+            background-image: url('assets/wheel-frame.png');
+        }
+
+        /* WHEEL */
+        #wheel {
+            width: 100%;
+            height: 100%;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            transition: transform 0s ease-out;
+            will-change: transform;
+            background-image: url('assets/wheel.png');
+        }
+
+        /* POINTER */
+        #pointer {
+            position: absolute;
+            top: -5%;
+            width: 20%;
+            height: 20%;
+            z-index: 20;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            transform-origin: bottom center;
+            /*animation: pointerIdle 1s infinite ease-in-out;*/
+            background-image: url('assets/pointer.png');
+        }
+
+        #banners-section {
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 20px; 
+            padding: 50px 20px;
+            box-sizing: border-box;
+        }
+
+        .banner {
+            display: block;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .banner img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+
+        .banner.disabled {
+            pointer-events: none; 
+            opacity: 0.5; 
+            cursor: not-allowed;
+        }
+
+        #popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        #close-popup-btn {
+            position: absolute;
+            top: 5px;   
+            right: 5px;
+            width: 40px;
+            height: 40px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+
+        @keyframes rainDrop {
+            0% {
+                transform: translateY(-1000px) rotateZ(0deg); 
+                opacity: 0;
+            }
+            10% {
+                opacity: 1; 
+            }
+            100% {
+                transform: translateY(100vh) rotateZ(720deg); 
+                opacity: 0; 
+            }
+        }
+
+        @keyframes pointerIdle {
+            0%, 100% { transform: translateY(0) rotate(0); }
+            50% { transform: translateY(-3%) rotate(2deg); }
+        }
+
+        .pointer-shake {
+            animation: pointerShake 0.1s infinite alternate;
+        }
+
+        @keyframes pointerShake {
+            0% { transform: rotate(-2deg); }
+            100% { transform: rotate(2deg); }
+        }
+
+        /* SPIN BUTTON */
+        #spin-button {
+            position: absolute;
+            width: 25%;
+            height: 25%;
+            z-index: 30;
+            cursor: pointer;
+            border-radius: 50%;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            animation: pulse 1s infinite;
+            background-image: url('assets/spin-button.png');
+        }
+
+        #spin-button:active {
+            transform: scale(0.95);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* POPUP */
+        #popup-overlay {
+            position: fixed;
+            top: 0px;
+            left: 0px;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        #popup {
+            background-color: transparent;
+            padding: 0;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 600px;
+            max-height: 450px;
+            width: 100%;
+            height: 100%;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            animation: fadeIn 0.5s ease-in-out;
+            background-size: 100% 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: transparent;
+            position: relative;
+            display: block;
+        }
+
+        .cta-button {
+            position: absolute;
+            display: block;
+            z-index: 5; 
+        }
+
+        #hemen-al-btn {
+            bottom: 25px;
+            left: 20%; 
+            width: 30%;  
+            height: 60px; 
+        }
+
+        #takip-et-btn {
+            bottom: 25px; 
+            right: 20%;   
+            width: 30%;  
+            height: 60px; 
+        }
+
+
+        #popup-overlay a.cta-button-wrapper {
+            display: block;
+            position: relative;
+            width: 100%;
+            height: 100%;
+            max-width: 350px;
+            max-height: 550px;
+            text-decoration: none; 
+        }
+        
+        #popup a.cta-button:hover {
+            background-color: transparent;
+        }
+
+        @keyframes confetti-burst {
+            0% { transform: scale(0) translateY(-100vh) rotate(0deg); opacity: 1; }
+            50% { transform: scale(1) rotate(180deg); opacity: 1; }
+            100% { transform: scale(0.5) translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+
+        @keyframes floatUpDown {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-15px); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes confetti-twinkle {
+        0% {
+            transform: translate(-50%, -50%) scale(0) rotate(0deg);
+            opacity: 0;
+        }
+        20% {
+            transform: translate(-50%, -50%) scale(1) rotate(90deg);
+            opacity: 1;
+        }
+        80% {
+            transform: translate(-50%, -50%) scale(1) rotate(270deg);
+            opacity: 1;
+        }
+        100% {
+            transform: translate(-50%, -50%) scale(0) rotate(360deg);
+            opacity: 0;
+        }
+        }
+
+
+         /* MEDIA QUERIES FOR MOBILES 
+         Devices: iPhone SE 375x667 */
+        @media (min-width: 374px) and (max-width: 376px) and (min-height: 667px) and (max-height: 668px) {
+            #popup {
+                width: 280px;
+                height: 220px;
+            }
+
+            #wheel-area {
+                position: absolute;
+                width: 75%;
+                height: 75%;
+                top: 73%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                z-index: 5;
+            }
+
+            #header-text {
+                position: absolute;
+                top: -20%;
+                left: 10%;
+                width: 80vw;
+                height: 80vw; /* Adjust based on asset's aspect ratio */
+            }
+
+            #container {
+                width: 100%;
+                min-height: 60vh;
+            }
+
+            #consent-popup {
+                bottom: 5px;
+                right: 10px;
+                max-width: 350px;
+                width: 90vw;
+            }
+        }
+
+        /* MEDIA QUERIES FOR MOBILES 
+        Devices: iPhone XR 414x896, iPhone 12 Pro 390x844), iPhone 14 Pro Max 430x932,
+        Pixel 7 412x915, Galaxy S20 360x800, Galaxy S21 360x800, Galaxy S20 Ultra 412x915
+        (Less than 768px) */
+        @media (min-width: 376px){
+            #pointer {
+                top: 0%;
+            }
+
+            #popup {
+                width: 300px;
+                height: 240px;
+            }
+
+            #wheel-area {
+                position: absolute;
+                width: 83%;
+                height: 83%;
+                top: 70%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                z-index: 5;
+            }
+
+            #header-text {
+                top: -24%;
+                left: auto;
+                width: 100vw;
+                height: 100vw; 
+            }
+
+            #container {
+                width: 100%;
+                min-height: 60vh;
+            }
+
+        }
+
+        /* MEDIA QUERIES FOR BIGGER SCREENS */
+        @media (min-width: 1440px) {
+             #popup {
+                width: 500px;
+                height: 440px;
+                background-size: 100% 100%;
+                background-position: center;
+                background-repeat: no-repeat;
+                background-color: transparent;
+                padding: 0;
+            }
+
+            #container {
+                position: relative;
+                width: 100%;
+                min-height: 100vh;
+                display: flex;
+                justify-content: center;
+                align-items: flex-start;
+                flex-direction: column;
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                background-image: url('assets/bg.png');
+            }
+
+            #wheel-area {
+                position: absolute;
+                max-width: 700px;
+                max-height: 700px;
+                width: 90%;
+                height: 100%;
+                top: 63%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                z-index: 5;
+            }
+
+            #header-text {
+                position: absolute;
+                top: 30px;
+                left: 510px;
+                width: 100%;
+                max-width: 900px;
+                height: 100%; /* Adjust based on asset's aspect ratio */
+                max-height: 220px;
+                z-index: 999;
+                background-image: url('assets/header.png');
+                background-size: 70%;
+                background-repeat: no-repeat;
+                background-position: center;
+                animation: fadeIn 1s ease-in-out;
+                pointer-events: none;
+            }
+        }
+
+        /*MEDIA QUERIES FOR 1920x1200px*/
+        @media (min-width: 1900px) {
+            #popup {
+                width: 500px;
+                height: 440px;
+                background-size: 100% 100%;
+                background-position: center;
+                background-repeat: no-repeat;
+                background-color: transparent;
+                padding: 0;
+            }
+
+            #pointer {
+                top: -11%;
+            }
+
+            #container {
+                position: relative;
+                width: 100%;
+                min-height: 100vh;
+                display: flex;
+                justify-content: center;
+                align-items: flex-start;
+                flex-direction: column;
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                background-image: url('assets/bg.png');
+            }
+
+            #wheel-area {
+                position: absolute;
+                max-width: 700px;
+                max-height: 700px;
+                width: 90%;
+                height: 100%;
+                top: 63%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                z-index: 5;
+            }
+
+            #header-text {
+                position: absolute;
+                top: 30px;
+                left: 510px;
+                width: 100%;
+                max-width: 900px;
+                height: 100%; /* Adjust based on asset's aspect ratio */
+                max-height: 220px;
+                z-index: 999;
+                background-image: url('assets/header.png');
+                background-size: 70%;
+                background-repeat: no-repeat;
+                background-position: center;
+                animation: fadeIn 1s ease-in-out;
+                pointer-events: none;
+            }
+            
+        }
+
+        /*
+        MEDIA QUERIES FOR 1024 and higher
+        Devices: iPad Pro 1024x1366, 
+        */
+        @media (min-width: 1024px) and (max-width: 1279px) {
+            #popup {
+                width: 100%;
+                max-width: 550px;
+                max-height: 550px;
+                height: 100%
+            }
+
+            #container {
+                width: 100%;
+                min-height: 90vh;
+            }
+
+            #wheel-area {
+                width: 100%;
+                max-width: 750px;
+                height: 100%;
+                max-height: 750px;
+                top: 68%;
+            }
+
+            #header-text {
+                width: 100vw;
+                height: 40vh;
+                left: auto;
+                top: -5%;
+            }
+
+            #pointer {
+                top: -10%;
+            }
+        }
+
+        /* MEDIA QUERIES For Screens between 1280px and 1440px*/
+        @media (min-width: 1280px) and (max-width: 1439px) {
+            #popup {
+                width: 100%;
+                max-width: 450px;
+                max-height: 450px;
+                height: 100%;
+
+            }
+
+            #container {
+                width: 100%;
+                min-height: 100vh;
+            }
+
+            #wheel-area {
+                width: 100%;
+                max-width: 450px;
+                height: 100%;
+                max-height: 450px;
+                top: 62%;
+            }
+
+            #header-text {
+                width: 100vw;
+                height: 25vh;
+                left: auto;
+                top: -1%;
+            }
+
+            #pointer {
+                top: -10%;
+            }
+        }
+
+        /* MEDIA QUERIES FOR Regular Desktop Screens higher than 768px
+        Devices: iPad Mini 768x1024, iPad Air 820x1180, iPad Pro 1024x1366
+        */
+        @media (min-width: 768px) and (max-width: 1023px) {
+            #popup {
+                width: 100%;
+                max-width: 550px;
+                max-height: 550px;
+                height: 100%;
+            }
+
+            #container {
+                width: 100%;
+                min-height: 100vh;
+            }
+
+            #wheel-area {
+                width: 100%;
+                max-width: 600px;
+                height: 100%;
+                max-height: 600px;
+                top: 65%;
+            }
+
+            #header-text {
+                width: 100vw;
+                height: 40vh;
+                left: auto;
+                top: -5%;
+            }
+
+            #pointer {
+                top: -10%;
+            }
+        }
+
+        /* MEDIA QUERIES FOR Screens from 344px to 361px 
+        Devices: Samsung Galaxy S8 plus 360x740, Galaxy S7 360x640, Galaxy S6 360x640,
+        Galaxy Z Fold 5 344x842, 360x800, Galaxy Note 5 360x640 */
+        @media (min-width: 344px) and (max-width: 361px) {
+            #popup {
+                width: 280px;
+                height: 220px;
+            }
+
+            #container {
+                width: 100%;
+                min-height: 50vh;
+            }
+
+            #wheel-area {
+                position: absolute;
+                width: 80%;
+                height: 80%;
+                top: 73%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                z-index: 5;
+            }
+
+            #header-text {
+                position: absolute;
+                top: -15%;
+                left: 10%;
+                width: 80vw;
+                height: 80vw; /* Adjust based on asset's aspect ratio */
+            }
+
+        }
+
+        /* MEDIA QUERIES FOR Samsung Galaxy S8 plus 360 x 740 */
+        @media (min-width: 359px) and (max-width: 361px) and (min-height: 739px) and (max-height: 741px) {
+            #popup {
+                width: 280px;
+                height: 220px;
+            }
+
+            #container {
+                width: 100%;
+                min-height: 50vh;
+            }
+
+            #wheel-area {
+                position: absolute;
+                width: 80%;
+                height: 80%;
+                top: 70%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                z-index: 5;
+            }
+
+            #header-text {
+                position: absolute;
+                top: -25%;
+                left: 10%;
+                width: 80vw;
+                height: 80vw; /* Adjust based on asset's aspect ratio */
+            }
+        }
+
+        /* MEDIA QUERIES FOR Surface Pro 7 912x1368 */
+        @media (min-width: 911px) and (max-width: 913px) and (min-height: 1367px) and (max-height: 1369px) {
+            #popup {
+                width: 100%;
+                max-width: 550px;
+                max-height: 550px;
+                height: 100%
+            }
+
+            #container {
+                width: 100%;
+                min-height: 90vh;
+            }
+
+            #wheel-area {
+                width: 100%;
+                max-width: 750px;
+                height: 100%;
+                max-height: 750px;
+                top: 68%;
+            }
+
+            #header-text {
+                width: 100vw;
+                height: 40vh;
+                left: auto;
+                top: -5%;
+            }
+
+            #pointer {
+                top: -10%;
+            }
+        }
+
+        /* MEDIA QUERIES FOR Surface Duo 540x 720 */
+        @media (min-width: 539px) and (max-width: 541px) and (min-height: 719px) and (max-height: 721px) {
+            #popup {
+                width: 300px;
+                height: 240px;
+            }
+
+            #pointer {
+                top: -6%;
+            }
+
+            #wheel-area {
+                position: absolute;
+                width: 83%;
+                height: 83%;
+                top: 65%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                z-index: 5;
+            }
+
+            #header-text {
+                top: -24%;
+                left: auto;
+                width: 100vw;
+                height: 100vw; 
+            }
+
+            #container {
+                width: 100%;
+                min-height: 100vh;
+            }
+        }
+
+        /* MEDIA QUERIES FOR Asus Zenbook Fold 853 x 1280*/
+        @media (min-width: 852px) and (max-width: 854px) and (min-height: 1279px) and (max-height: 1281px) {
+            #popup {
+                width: 400px;
+                max-width: 400px;
+                max-height: 350px;
+            }
+
+            #container {
+                width: 100%;
+                min-height: 90vh;
+            }
+
+            #wheel-area {
+                width: 100%;
+                max-width: 750px;
+                height: 100%;
+                max-height: 750px;
+                top: 68%;
+            }
+
+            #header-text {
+                width: 100vw;
+                height: 40vh;
+                left: auto;
+                top: -5%;
+            }
+
+            #pointer {
+                top: -10%;
+            }
+        }
+
+        /*MEDIA QUERIES FOR iPhone 15Pro Max 430x932 */
+        @media (min-width: 400px) and (max-width: 440px) and (min-height: 931px) and (max-height: 933px) {
+            #popup {
+                width: 300px;
+                height: 240px;
+            }
+
+            #pointer {
+                top: 2%;
+            }
+
+            #wheel-area {
+                position: absolute;
+                width: 90vw;
+                height: 83%;
+                top: 70%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                z-index: 5;
+            }
+
+            #header-text {
+                top: -24%;
+                left: auto;
+                width: 100vw;
+                height: 100vw; 
+            }
+
+            #container {
+                width: 100%;
+                min-height: 63vh;
+            }
+
+        }
+
+        /* Cookie Consent */
+        #consent-popup {
+            position: fixed;
+            bottom: 10px;
+            right: 20px;
+            max-width: 350px;
+            width: 90vw;
+            display: flex;
+            justify-content: flex-end;
+            align-items: flex-end;
+            z-index: 99999;
+            background-color: transparent;
+        }
+
+        #consent-content {
+            background-color: #333;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: left;
+            width: 100%;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            color: white;
+            margin-bottom: 10px;
+            margin-top: 10px;
+        }
+
+        .consent-buttons {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        #consent-content h3 {
+            margin: 0 0 10px;
+            font-size: 1em;
+        }
+
+        #consent-content p {
+            font-size: 0.8em; 
+            margin-bottom: 15px;
+        }
+        #accept-button, #decline-button {
+            background-color: transparent;
+            color: white;
+            border: 1px solid white;
+            padding: 8px 12px;
+            flex-grow: 1;
+            box-sizing: border-box;
+        }
+
+
+        #accept-button:hover {
+            background-color: #45a049;
+        }
+
+        #decline-button:hover {
+            background-color: #da190b;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="container">
+
+        <div id="header-text"></div>
+
+        <div id="wheel-area">
+            <div id="wheel-frame"></div>
+            <div id="wheel"></div>
+            <div id="pointer"></div>
+            <div id="spin-button"></div>
+        </div>
+
+    </div>
+        <div id="banners-section">
+        <a href="https://bonus.1387bets10.com/tr/ilk-para-yatirma-bonusu/" class="banner" id="banner-1">
+            <img src="assets/banners/Bets10.gif" alt="Banner 1">
+        </a>
+        <a href="hhttps://davegas.com/tr/kampanyalar/birinci-hos-geldin-bonusu" class="banner" id="banner-2">
+            <img src="assets/banners/Davegas.gif" alt="Banner 2">
+        </a>
+        <a href="https://discountcasino725.com/tr/kampanyalar/yeni-uyelere-ozel-nakit-odemeler" class="banner" id="banner-3">
+            <img src="assets/banners/Discount Casino.gif" alt="Banner 3">
+        </a>
+        <a href="https://hovarda.com/tr/kampanyalar/eglenceyi-300-bonus-ile-baslat" class="banner" id="banner-4">
+            <img src="assets/banners/Hovarda.gif" alt="Banner 4">
+        </a>
+        <a href="hhttps://davegas.com/tr/kampanyalar/birinci-hos-geldin-bonusu" class="banner" id="banner-5">
+            <img src="assets/banners/Milyar.gif" alt="Banner 5">
+        </a>
+        <a href="https://telegram.org" class="banner" id="banner-6">
+            <img src="assets/banners/Telegram-banner.gif" alt="Banner 6">
+        </a>
+        <a href="https://winnit47.com/tr/kampanyalar/winnit-hosgeldin-bonuslarin" class="banner" id="banner-7">
+            <img src="assets/banners/winnit.gif" alt="Banner 7">
+        </a>
+        </div>
+
+
+    <div id="popup-overlay">
+        <div id="popup">
+            <div id="close-popup-btn"></div> 
+            <a href="#" class="cta-button" id="hemen-al-btn"></a>
+            <a href="#" class="cta-button" id="takip-et-btn"></a>
+        </div>
+    </div>
+
+    <script>
+            async function unlockAudio() {
+              try {
+                if (audioContext.state === "suspended") {
+                  await audioContext.resume();
+                }
+                await ensureAudioLoaded();
+            
+            
+                if (!audioNodes.spinLoop) {
+                  audioNodes.spinLoop = playAudio('spinLoop', true);
+                }
+
+                console.log("🎵 AudioContext ready & sounds preloaded");
+              } catch (e) {
+                console.error("Unlock/preload failed:", e);
+              }
+            }
+
+
+
+        // --- CONFIGURATION ---
+        const config = {
+            ctaLink: 'https://example.com/register',
+            wheelSegments: 6,
+            //winningSegments: [0, 2, 4],
+            assets: {
+                background: 'assets/bg.png',
+                wheel: 'assets/wheel.png',
+                wheelFrame: 'assets/wheel-frame.png',
+                pointer: 'assets/pointer.png',
+                spinButton: 'assets/spin-button.png',
+                popupBg: 'assets/popup-bg.png',
+                sounds: {
+                    spinLoop: 'assets/spin-loop.mp3',
+                    tick: 'assets/tick.mp3',
+                    spinStart: 'assets/spin-start.mp3',
+                    spinSlow: 'assets/spin-slow.mp3',
+                    win: 'assets/win.mp3',
+                }
+            },
+            prizes: [
+                { name: '%200 Bonus + 50FS', text: '', message: '', ctaText: '', bannerImage: 'assets/popups/B10-popup.png', ctaLink: 'https://bonus.1387bets10.com/tr/ilk-para-yatirma-bonusu/' },
+                { name: '%300 Bonus HV', text: '', message: '', ctaText: '', bannerImage: 'assets/popups/Hovarda-popup.png', ctaLink: 'https://hovarda.com/tr/kampanyalar/eglenceyi-300-bonus-ile-baslat'  },
+                { name: '5000TL Bonus + 50FS', text: '', message: '', ctaText: '', bannerImage: 'assets/popups/Winnit-popup.png', ctaLink: 'https://winnit47.com/tr/kampanyalar/winnit-hosgeldin-bonuslarin'  },
+                { name: '5000TL Nakit Iade', text: '', message: '', ctaText: '', bannerImage: 'assets/popups/DC-popup.png', ctaLink: 'https://discountcasino725.com/tr/kampanyalar/yeni-uyelere-ozel-nakit-odemeler'  },
+                { name: '5000TL Bonus + 300FS', text: '', message: '', ctaText: '', bannerImage: 'assets/popups/DV-popup.png', ctaLink: 'hhttps://davegas.com/tr/kampanyalar/birinci-hos-geldin-bonusu'  },
+                { name: '8000TL Bonus', text: '', message: '', ctaText: '', bannerImage: 'assets/popups/Milyar-popup.png', ctaLink: 'https://milyar.com/tr/kampanyalar/8000tl-kadar-hos-geldin-bonusu'  },
+            ]
+            
+        };
+
+
+        const hemenAlBtn = document.getElementById('hemen-al-btn');
+        const takipEtBtn = document.getElementById('takip-et-btn');
+
+        //Closing the popup
+        const closePopupButton = document.getElementById('close-popup-btn');
+        closePopupButton.addEventListener('click', closePopup);
+
+        function closePopup() {
+            popupOverlay.style.display = 'none';
+            startWheelLoop();
+        }
+
+        
+
+        const wheel = document.getElementById('wheel');
+        const spinButton = document.getElementById('spin-button');
+        const pointer = document.getElementById('pointer');
+        const popupOverlay = document.getElementById('popup-overlay');
+        const popupTitle = document.getElementById('popup-title');
+        const popupMessage = document.getElementById('popup-message');
+        const ctaButton = document.getElementById('cta-button');
+        const container = document.getElementById('container');
+        const banners = document.querySelectorAll('.banner');
+        
+        let isSpinning = false;
+        let lastSegmentIndex = -1;
+        let audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        let audioBuffers = {};
+        const audioNodes = {};
+
+        async function loadAudio(url, name) {
+            try {
+                const response = await fetch(url);
+                const arrayBuffer = await response.arrayBuffer();
+                audioBuffers[name] = await audioContext.decodeAudioData(arrayBuffer);
+            } catch (error) {
+                console.error(`Error loading audio ${name}:`, error);
+            }
+        }
+
+            let audioPreloaded = false;
+            async function ensureAudioLoaded() {
+              if (audioPreloaded) return;
+              const sounds = config.assets.sounds;
+              const names = Object.keys(sounds);
+              await Promise.all(names.map(n => loadAudio(sounds[n], n)));
+              audioPreloaded = true;
+            }
+
+
+        function playAudio(name, loop = false) {
+            if (!audioBuffers[name]) {
+                console.warn(`Audio ${name} not loaded.`);
+                return null;
+            }
+            const source = audioContext.createBufferSource();
+            source.buffer = audioBuffers[name];
+            source.connect(audioContext.destination);
+            source.loop = loop;
+            source.start(0);
+            return source;
+        }
+
+        function stopAudio(sourceNode) {
+            if (sourceNode) {
+                sourceNode.stop();
+                sourceNode.disconnect();
+            }
+        }
+        
+        function init() {
+            for (const name in config.assets.sounds) {
+                loadAudio(config.assets.sounds[name], name);
+            }
+            spinButton.addEventListener('click', spinWheel);
+            spinButton.addEventListener('touchstart', spinWheel, { passive: true });
+
+            startWheelLoop();
+            //createConfettiRain();
+            //createRainAnimation();
+        }
+
+        function startWheelLoop() {
+            if (audioNodes.spinLoop) return;
+
+            wheel.style.transition = 'transform 20s linear infinite';
+            wheel.style.transform = `rotate(3600deg)`;
+            audioNodes.spinLoop = playAudio('spinLoop', true);
+           // pointer.classList.add('pointer-shake');
+        }
+
+        async function spinWheel() {
+
+            if (audioContext.state === 'suspended') {
+                 audioContext.resume();
+                }
+
+            await ensureAudioLoaded();  
+
+            if (isSpinning) return;
+            isSpinning = true;
+            disableBanners();
+            spinButton.style.animation = 'none';
+            //pointer.classList.remove('pointer-shake');
+            if (audioNodes.spinLoop) {
+                stopAudio(audioNodes.spinLoop);
+              }
+            audioNodes.spinStart = playAudio('spinStart');
+            //pointer.classList.add('pointer-shake');
+
+            const spinDuration = 5000;
+            const degreesPerSegment = 360 / config.wheelSegments;
+            const targetSegment = Math.floor(Math.random() * config.wheelSegments);
+
+            const baseRotation = (360 - (targetSegment * degreesPerSegment));
+            
+
+            //Center of the segment
+            const segmentAngle = (targetSegment * degreesPerSegment);
+            const offsetAngle = degreesPerSegment / 2;
+
+            //Ofsset to avoid stopping in the borderlines
+            const minOffset = 1;  
+            const maxOffset = degreesPerSegment - 4; 
+            const randomOffset = Math.random() * (maxOffset - minOffset) + minOffset;
+            
+            
+            //Rotation calculation
+            const extraSpins = 5 * 360;
+            //const segmentOffset = Math.random() * (degreesPerSegment - 10) + 5;
+            const totalDegrees = extraSpins + baseRotation - randomOffset;
+            
+            wheel.style.transition = `transform ${spinDuration / 1000}s cubic-bezier(0.25, 0.1, 0.25, 1)`;
+            wheel.style.transform = `rotate(${totalDegrees}deg)`;
+
+            const wheelObserver = new MutationObserver(() => {
+                const style = window.getComputedStyle(wheel);
+                const transform = style.getPropertyValue('transform');
+                const matrix = new DOMMatrix(transform);
+                const currentRotation = Math.round(Math.atan2(matrix.b, matrix.a) * (180 / Math.PI));
+                const normalizedRotation = (360 + currentRotation) % 360;
+                
+                const segmentIndex = Math.floor(normalizedRotation / degreesPerSegment);
+                if (segmentIndex !== lastSegmentIndex) {
+                    playAudio('tick');
+                    lastSegmentIndex = segmentIndex;
+                }
+            });
+
+            wheelObserver.observe(wheel, { attributes: true, attributeFilter: ['style'] });
+            
+            setTimeout(() => {
+                wheelObserver.disconnect();
+                isSpinning = false;
+                showResult(targetSegment);
+                
+                const finalRotation = totalDegrees % 360;
+                wheel.style.transition = 'none';
+                wheel.style.transform = `rotate(${finalRotation}deg)`;
+                spinButton.style.animation = 'pulse 1s infinite';
+            }, spinDuration + 100);
+        }
+
+        function createRainAnimation(imageSrc, count = 30) {
+            const container = document.body; 
+            for (let i = 0; i < count; i++) {
+                const item = document.createElement('div');
+                item.classList.add('rain-item');
+                item.style.backgroundImage = `url('${imageSrc}')`; 
+                item.style.left = `${Math.random() * 100}vw`; 
+                item.style.animationDelay = `${Math.random() * 2}s`; 
+                item.style.animationDuration = `${3 + Math.random() * 2}s`;
+                container.appendChild(item);
+            
+                item.addEventListener('animationend', () => {
+                    item.remove();
+                });
+            }
+        }
+
+        function showResult(segmentIndex) {
+            playAudio('win');
+            //pointer.classList.add('pointer-shake');
+            
+            const prize = config.prizes[segmentIndex];
+            
+            //createRainAnimation('assets/sparkle.png', 500);
+           //createConfettiRain();
+            
+           // popupTitle.textContent = prize.text;
+           // popupMessage.textContent = prize.message;
+           // ctaButton.href = config.ctaLink;
+           // ctaButton.textContent = prize.ctaText;
+
+            if (prize) {
+                const popup = document.getElementById('popup')
+                popup.style.backgroundImage = `url('${prize.bannerImage}')`;
+
+                hemenAlBtn.href = prize.ctaLink;
+                takipEtBtn.href = 'https://telegram.org';
+
+            }
+            
+            popupOverlay.style.display = 'flex';
+            enableBanners();
+        }
+
+            function createConfettiRain() {
+             const confettiAssets = config.assets.confetti;         
+                setInterval(() => {
+                    // Pick a random asset from the confetti array
+                    const randomAsset = confettiAssets[Math.floor(Math.random() * confettiAssets.length)];
+                
+                    const confetti = document.createElement('div');
+                    confetti.classList.add('confetti-particle');
+                
+                    confetti.style.backgroundImage = `url('${randomAsset}')`;
+                
+                    const size = Math.random() * 40 + 20; // Randomize size for more variety
+                    const x = Math.random() * window.innerWidth;
+                    const y = Math.random() * window.innerHeight;
+                    const duration = Math.random() * 1.5 + 2; // Randomize duration
+                
+                    confetti.style.width = `${size}px`;
+                    confetti.style.height = `${size}px`;
+                    confetti.style.left = `${x}px`;
+                    confetti.style.top = `${y}px`;
+                    confetti.style.animation = `confetti-twinkle ${duration}s ease-out forwards`;
+                
+                    container.appendChild(confetti);
+                
+                    // Remove the element after its animation is complete
+                    setTimeout(() => confetti.remove(), duration * 1000);
+                
+                }, 500); // Create a new particle every 500ms
+            }
+                
+        document.addEventListener('DOMContentLoaded', () => {
+            spinButton.addEventListener('click', spinWheel);
+            spinButton.addEventListener('touchstart', spinWheel, { passive: true });
+            ensureAudioLoaded();
+        });
+
+        function disableBanners() {
+            banners.forEach(banner => {
+                banner.classList.add('disabled');
+            });
+        }
+
+        function enableBanners() {
+            banners.forEach(banner => {
+                banner.classList.remove('disabled');
+            });
+        }
+
+    </script>
+    <!-- Cookie Consent V2 -->
+    <div id="consent-popup">
+        <div id="consent-content" class="consent-content">
+            <h3>Gizlilik Politikası</h3>
+            <p>Gizliliğinizi önemsiyoruz ve verilerinizi koruma altına almak için gerekli tüm önlemleri alıyoruz. Detaylar için lütfen gizlilik politikamızı okuyun</p>
+            <div class="consent-buttons">
+                <button id="accept-button">Kabul Et</button>
+                <button id="decline-button">Reddet</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+                  // --- Consent popup logic ---
+        const consentPopup = document.getElementById('consent-popup');
+        const acceptButton = document.getElementById('accept-button');
+        const declineButton = document.getElementById('decline-button');
+        const consentKey = 'user_consent';
+
+        function showConsentPopup() {
+            if (!localStorage.getItem(consentKey)) {
+                consentPopup.style.display = 'flex';
+            }
+            //createConfettiRain();
+        }
+
+        function hideConsentPopup() {
+            consentPopup.style.display = 'none';
+            //createConfettiRain();
+        }
+
+        function handleAccept() {
+            localStorage.setItem(consentKey, 'accepted');
+            hideConsentPopup();
+            console.log('Consent accepted.');
+
+             if (audioContext.state === 'suspended') {
+                audioContext.resume().then(() => {
+                    startWheelLoop();
+                }).catch(e => {
+                    console.error("Error resuming AudioContext:", e);
+                });
+            } else {
+                startWheelLoop();
+            }
+        }
+
+        function handleDecline() {
+            localStorage.setItem(consentKey, 'declined');
+            hideConsentPopup();
+            console.log('Consent declined.');
+        }
+
+        acceptButton.addEventListener('click', handleAccept);
+        declineButton.addEventListener('click', handleDecline);
+
+        // Call the function to show the popup when the page loads
+        document.addEventListener('DOMContentLoaded', showConsentPopup);
+    </script>
+
+</body>
+</html>
