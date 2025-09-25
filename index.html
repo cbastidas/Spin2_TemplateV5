@@ -336,6 +336,55 @@
         }
         }
 
+        /*MEDIA QUERIES FOR MAC 1512x982*/
+        @media (min-width: 1510px){
+            #popup {
+                width: 500px;
+                height: 440px;
+                background-size: 100% 100%;
+                background-position: center;
+                background-repeat: no-repeat;
+                background-color: transparent;
+                padding: 0;
+            }
+
+            #container {
+                position: relative;
+                width: 100%;
+                min-height: 100vh;
+                display: flex;
+                justify-content: center;
+                align-items: flex-start;
+                flex-direction: column;
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                background-image: url('assets/bg.png');
+            }
+
+            #wheel-area {
+                position: absolute;
+                max-width: 700px;
+                max-height: 700px;
+                width: 90%;
+                height: 100%;
+                top: 63%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                z-index: 5;
+            }
+
+            #header-text {
+                position: absolute;
+                top: 30px;
+                left: 510px;
+                width: 100%;
+                max-width: 900px;
+                height: 100%; /* Adjust based on asset's aspect ratio */
+                max-height: 220px;
+                z-index: 999;
+            }
+        }
 
          /* MEDIA QUERIES FOR MOBILES 
          Devices: iPhone SE 375x667 */
@@ -416,7 +465,11 @@
 
         /* MEDIA QUERIES FOR BIGGER SCREENS */
         @media (min-width: 1440px) {
-             #popup {
+            #pointer {
+                top: -4rem;
+            }
+
+            #popup {
                 width: 500px;
                 height: 440px;
                 background-size: 100% 100%;
@@ -454,8 +507,8 @@
 
             #header-text {
                 position: absolute;
-                top: 30px;
-                left: 510px;
+                top: 0rem;
+                left: 19rem;
                 width: 100%;
                 max-width: 900px;
                 height: 100%; /* Adjust based on asset's aspect ratio */
@@ -514,7 +567,7 @@
 
             #header-text {
                 position: absolute;
-                top: 30px;
+                top: 0rem;
                 left: 510px;
                 width: 100%;
                 max-width: 900px;
@@ -919,7 +972,7 @@
         <a href="https://bonus.1387bets10.com/tr/ilk-para-yatirma-bonusu/" class="banner" id="banner-1">
             <img src="assets/banners/Bets10.gif" alt="Banner 1">
         </a>
-        <a href="hhttps://davegas.com/tr/kampanyalar/birinci-hos-geldin-bonusu" class="banner" id="banner-2">
+        <a href="https://davegas.com/tr/kampanyalar/birinci-hos-geldin-bonusu" class="banner" id="banner-2">
             <img src="assets/banners/Davegas.gif" alt="Banner 2">
         </a>
         <a href="https://discountcasino725.com/tr/kampanyalar/yeni-uyelere-ozel-nakit-odemeler" class="banner" id="banner-3">
@@ -928,7 +981,7 @@
         <a href="https://hovarda.com/tr/kampanyalar/eglenceyi-300-bonus-ile-baslat" class="banner" id="banner-4">
             <img src="assets/banners/Hovarda.gif" alt="Banner 4">
         </a>
-        <a href="hhttps://davegas.com/tr/kampanyalar/birinci-hos-geldin-bonusu" class="banner" id="banner-5">
+        <a href="https://davegas.com/tr/kampanyalar/birinci-hos-geldin-bonusu" class="banner" id="banner-5">
             <img src="assets/banners/Milyar.gif" alt="Banner 5">
         </a>
         <a href="https://telegram.org" class="banner" id="banner-6">
