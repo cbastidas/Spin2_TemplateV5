@@ -628,6 +628,67 @@
             
         }
 
+        /*MEDIA QUERIES FOR 2200 and higher*/
+        @media (min-width: 2200px) {
+            #popup {
+                width: 600px;
+                height: 500px;
+                background-size: 100% 100%;
+                background-position: center;
+                background-repeat: no-repeat;
+                background-color: transparent;
+                padding: 0;
+            }
+
+            #pointer {
+                top: -10%;
+                height: 7rem;
+            }
+
+            #container {
+                position: relative;
+                width: 100%;
+                min-height: 100vh;
+                display: flex;
+                justify-content: center;
+                align-items: flex-start;
+                flex-direction: column;
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                background-image: url('assets/bg.png');
+            }
+
+            #wheel-area {
+                position: absolute;
+                max-width: 800px;
+                max-height: 800px;
+                width: 90%;
+                height: 100%;
+                top: 63%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                z-index: 5;
+            }
+
+            #header-text {
+                position: absolute;
+                top: 2rem;
+                left: 44rem;
+                width: 100%;
+                max-width: 900px;
+                height: 100%; /* Adjust based on asset's aspect ratio */
+                max-height: 220px;
+                z-index: 999;
+                background-image: url('assets/header.png');
+                background-size: 70%;
+                background-repeat: no-repeat;
+                background-position: center;
+                animation: fadeIn 1s ease-in-out;
+                pointer-events: none;
+            }
+        }
+
         /*
         MEDIA QUERIES FOR 1024 and higher
         Devices: iPad Pro 1024x1366, 
