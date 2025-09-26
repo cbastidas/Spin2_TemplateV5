@@ -463,6 +463,54 @@
             }
         }
 
+        @media (min-width: 1512px) {
+            #popup {
+                width: 500px;
+                height: 440px;
+                background-size: 100% 100%;
+                background-position: center;
+                background-repeat: no-repeat;
+                background-color: transparent;
+                padding: 0;
+            }
+
+            #container {
+                position: relative;
+                width: 100%;
+                min-height: 100vh;
+                display: flex;
+                justify-content: center;
+                align-items: flex-start;
+                flex-direction: column;
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                background-image: url('assets/bg.png');
+            }
+
+            #wheel-area {
+                position: absolute;
+                max-width: 700px;
+                max-height: 700px;
+                width: 90%;
+                height: 100%;
+                top: 63%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                z-index: 5;
+            }
+
+            #header-text {
+                position: absolute;
+                top: 30px;
+                left: 510px;
+                width: 100%;
+                max-width: 900px;
+                height: 100%; /* Adjust based on asset's aspect ratio */
+                max-height: 220px;
+                z-index: 999;
+            }
+        }
         /* MEDIA QUERIES FOR MOBILES 
         Devices: iPhone XR 414x896, iPhone 12 Pro 390x844), iPhone 14 Pro Max 430x932,
         Pixel 7 412x915, Galaxy S20 360x800, Galaxy S21 360x800, Galaxy S20 Ultra 412x915
@@ -506,11 +554,11 @@
         }
 
         /* MEDIA QUERIES FOR BIGGER SCREENS */
-        @media (min-width: 1440px) {
+        @media (min-width: 1440px) and (max-width: 1512px) {
             #pointer {
                 top: -3rem;
                 height: 6rem;
-                background-image: url('assets/pointer-mb.png');
+                background-image: url('assets/pointer.png');
             }
 
             #popup {
@@ -549,6 +597,15 @@
                 z-index: 5;
             }
 
+            #wheel {
+                background-size: contain;
+                background-repeat: no-repeat;
+                background-position: center;
+                background-image: url('assets/wheel.png');
+                max-height: 100%;
+                max-width: 100%;
+            }
+
             #header-text {
                 position: absolute;
                 top: 0rem;
@@ -581,6 +638,7 @@
 
             #pointer {
                 top: -8%;
+                height: 7rem;
             }
 
             #container {
