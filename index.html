@@ -676,7 +676,7 @@
                 height: 100%; /* Adjust based on asset's aspect ratio */
                 max-height: 220px;
                 z-index: 999;
-                background-image: url('assets/header.png');
+                background-image: url('assets/header-one.png');
                 background-size: 70%;
                 background-repeat: no-repeat;
                 background-position: center;
@@ -751,7 +751,7 @@
         MEDIA QUERIES FOR 1024 and higher
         Devices: iPad Pro 1024x1366, 
         */
-        @media (min-width: 1024px) and (max-width: 1279px) {
+        @media (min-width: 1024px) and (max-width: 1200px) {
             #popup {
                 width: 100%;
                 max-width: 550px;
@@ -785,7 +785,7 @@
         }
 
         /* MEDIA QUERIES For Screens between 1280px and 1440px*/
-        @media (min-width: 1280px) and (max-width: 1439px) {
+        @media (min-width: 1200px) and (max-width: 1439px) {
             #popup {
                 width: 100%;
                 max-width: 450px;
@@ -809,9 +809,10 @@
 
             #header-text {
                 width: 100vw;
-                height: 25vh;
+                height: 10vh;
                 left: -0.5rem;
-                top: -1%;
+                top: 6%;
+                background-image: url('assets/header-one.png');
             }
 
             #pointer {
